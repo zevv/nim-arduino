@@ -52,15 +52,14 @@ if not p.match(cmdLine).ok:
 proc macros()
 proc cpp()
 proc c()
+proc link()
 
 if opt_cmd == "macros": macros()
 elif opt_cmd == "cpp": cpp()
 elif opt_cmd == "c": c()
+elif opt_cmd == "link": link()
 else: err "Unhandled command " & opt_cmd
 
-
-# Preprocessor stage: run the sketch through the nim compiler and pass all the
-# resulting cpp files through the preprocessor with the given command line.
 
 proc macros() =
   log &"""macros {opt_args["input"]} -> {opt_args["output"]}"""
@@ -74,6 +73,7 @@ proc macros() =
  
   let args = @[ "cpp",
                 "-c",
+                "--path:/home/ico/sandbox/prjs/nim-arduino",
                 "--cpu:avr",
                 "--os:any",
                 "--gc:arc",
@@ -100,8 +100,6 @@ proc macros() =
 
   fout.close()
 
-
-# Compilation stage
 
 proc cpp() =
   let (input, output, compiler) = (opt_args["input"], opt_args["output"], opt_args["compiler"])
@@ -135,6 +133,7 @@ proc cpp() =
     args.add output
     log run(opt_args["compiler"], args)
 
+
 proc c() =
   let (input, output) = (opt_args["input"], opt_args["output"])
   log &"""gcc {input} -> {output}"""
@@ -143,4 +142,21 @@ proc c() =
   args.add "-o"
   args.add output
   log run(opt_args["compiler"], args)
+
+
+proc link() =
+  let (input, output) = (opt_args["input"], opt_args["output"])
+  log &"""link {input} -> {output}"""
+  let (dir, file) = input.splitPath
+  let nimcache = dir & DirSep & "nimcache"
+
+  var args: seq[string]
+  for f in walkfiles(nimcache & "/*.o"):
+    args.add f
+  args.add 
+  opt_args["ldflags"].splitWhiteSpace
+
+  args.add "-o"
+  args.add output
+  log run(opt_args["linker"], args)
 
