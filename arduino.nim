@@ -24,5 +24,8 @@ type
 
 var Serial* {.importcpp: "Serial", header: "Arduino.h".}: HardwareSerial
 proc begin*(this: var HardwareSerial; baud: culong) {.importcpp: "begin", header: "Arduino.h".}
+proc available*(this: var HardwareSerial): cint {.importcpp: "available", header: "Arduino.h".}
+proc read*(this: var HardwareSerial): cint {.importcpp: "read", header: "Arduino.h".}
 proc print*(this: var HardwareSerial; s: cstring) {.importcpp: "print", header: "Arduino.h".}
+proc println*(this: var HardwareSerial; s: cstring) {.importcpp: "println", header: "Arduino.h".}
 
