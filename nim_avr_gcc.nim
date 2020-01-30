@@ -5,17 +5,17 @@ import os, strutils, parseopt, osproc, npeg, tables, strformat, streams
 const nimInclude = "-I/home/ico/external/Nim/lib/"
 
 proc err(s: string) =
-  echo "\e[31;1m" & s & "\e[0m"
+  echo s
   quit 1
 
 proc log(s: string) =
-  echo "\e[33;1m" & s & "\e[0m"
+  echo s
 
 proc dbg(s: string) =
-  echo "\e[30;1m" & s & "\e[0m"
+  echo s
 
 proc run(cmd: string, args: seq[string]): string =
-  dbg "run: " & cmd & " " & args.join(" ")
+  dbg cmd & " " & args.join(" ")
   let p = startProcess(cmd, args=args, options={poUsePath,poStdErrToStdOut})
   let o = p.outputStream.readAll()
   let rv = p.waitForExit()
@@ -62,8 +62,7 @@ else: err "Unhandled command " & opt_cmd
 
 
 proc macros() =
-  log &"""macros {opt_args["input"]} -> {opt_args["output"]}"""
-
+  #log &"""macros {opt_args["input"]} -> {opt_args["output"]}"""
   let (input, output) = (opt_args["input"], opt_args["output"])
   let (dir, file) = input.splitPath
   let nimsrc = dir & DirSep & "sketch.nim"
@@ -107,7 +106,7 @@ proc cpp() =
   let (bindir, _) = compiler.splitPath
   let nimsrc = dir & DirSep & "sketch.nim"
   let nimcache = dir & DirSep & "nimcache"
-  log &"""g++ {input} -> {output}"""
+  #log &"""g++ {input} -> {output}"""
 
   var ofiles: seq[string]
   if input.contains("sketch"):
@@ -136,7 +135,7 @@ proc cpp() =
 
 proc c() =
   let (input, output) = (opt_args["input"], opt_args["output"])
-  log &"""gcc {input} -> {output}"""
+  #log &"""gcc {input} -> {output}"""
   var args = opt_args["cflags"].splitWhiteSpace()
   args.add input
   args.add "-o"
@@ -146,15 +145,14 @@ proc c() =
 
 proc link() =
   let (input, output) = (opt_args["input"], opt_args["output"])
-  log &"""link {input} -> {output}"""
+  #log &"""link {input} -> {output}"""
   let (dir, file) = input.splitPath
   let nimcache = dir & DirSep & "nimcache"
 
   var args: seq[string]
   for f in walkfiles(nimcache & "/*.o"):
     args.add f
-  args.add 
-  opt_args["ldflags"].splitWhiteSpace
+  args.add opt_args["ldflags"].splitWhiteSpace
 
   args.add "-o"
   args.add output
