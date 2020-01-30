@@ -5,14 +5,14 @@ import os, strutils, parseopt, osproc, npeg, tables, strformat, streams
 const nimInclude = "-I/home/ico/external/Nim/lib/"
 
 proc err(s: string) =
-  echo s
+  echo ">>> " & s
   quit 1
 
 proc log(s: string) =
-  echo s
+  echo ">>> " & s
 
 proc dbg(s: string) =
-  echo s
+  echo ">>> " & s
 
 proc run(cmd: string, args: seq[string]): string =
   dbg cmd & " " & args.join(" ")
@@ -31,6 +31,7 @@ proc run(cmd: string, args: seq[string]): string =
 # arguments, so for now do it with Npeg
 
 let cmdLine = commandLineParams().join(" ")
+log cmdLine
 var opt_cmd: string
 var opt_args: Table[string, string]
 
@@ -43,8 +44,12 @@ let p = peg line:
   key <- >+Alnum
   val <- >+Alnum | '"' * >+(1-'"') * '"'
 
-if not p.match(cmdLine).ok:
-  err "Error parsing command line"
+let r = p.match(cmdLine)
+if not r.ok:
+  let l1 = r.matchMax
+  let l2 = min(r.matchMax+30, cmdLine.len)
+  err "Error parsing command line at: " & cmdLine[l1..<l2]
+
 
 
 # Dispatch subcommand
