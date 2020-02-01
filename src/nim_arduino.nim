@@ -24,8 +24,6 @@ proc run(cmd: string, args: seq[string]): string =
     err "Error running command\n" & o
   result = o
 
-  #let r = execCmd(s & " 2>&1")
-  #if r != 0: err "Error executing command"
 
 # Parse command line arguments. parseOpts has problems with whitespace in
 # arguments, so for now do it with Npeg
