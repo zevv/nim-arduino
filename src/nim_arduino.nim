@@ -73,35 +73,23 @@ proc macros() =
   let nimsrc = dir & DirSep & "sketch.nim"
   let nimcache = dir & DirSep & "nimcache"
 
-  copyFile(opt_args["input"], nimsrc)
- 
-  let args = @[ "cpp",
-                "-c",
-                "--path:/home/ico/sandbox/prjs/nim-arduino",
-                "--cpu:avr",
-                "--os:any",
-                "--gc:arc",
-                "--nimcache:" & nimcache,
-                "--exceptions:goto",
-                "--noMain",
-                "-d:noSignalHandler",
-                "-d:danger",
-                "-d:useMalloc",
-                nimsrc]
+  # Build nim command line and compile the sketch
 
+  var args = @[ "cpp", "-c", "--nimcache:" & nimcache ]
+  args.add opt_args["nimflags"].splitWhiteSpace()
+  args.add nimsrc
+
+  copyFile(opt_args["input"], nimsrc)
   discard run("nim", args)
   
   var fout = open(opt_args["output"], fmWrite)
-  
   for f in os.walkfiles(nimcache & "/*.cpp"):
     let cmd = opt_args["compiler"]
     var args = opt_args["cppflags"].splitWhiteSpace()
     args.add niminclude
     args.add f
-
     let o = run(cmd, args)
     fout.write(o)
-
   fout.close()
 
 

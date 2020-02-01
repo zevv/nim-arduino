@@ -1,13 +1,6 @@
 
 # Mostly translated with c2nim from Arduino.h and friends
 
-template setup*(code: untyped) =
-  proc setup*() {.exportc.} =
-    code 
-
-template loop*(code: untyped) =
-  proc loop*() {.exportc.} =
-    code 
 
 const LED_BUILTIN* = 13
 const HIGH* = 1
@@ -57,7 +50,7 @@ var Serial* {.importcpp: "Serial", header: "Arduino.h".}: HardwareSerial
 proc begin*(this: var HardwareSerial; baud: cint) {.importcpp: "begin", header: "Arduino.h".}
 proc available*(this: var HardwareSerial): cint {.importcpp: "available", header: "Arduino.h".}
 proc read*(this: var HardwareSerial): cint {.importcpp: "read", header: "Arduino.h".}
-proc write*(this: var HardwareSerial; n: uint8): csize {.importcpp: "write", header: "HardwareSerial.h".}
+proc write*(this: var HardwareSerial; n: uint8): csize_t {.importcpp: "write", header: "HardwareSerial.h".}
 proc print*(this: var HardwareSerial; s: cstring) {.importcpp: "print", header: "Arduino.h".}
 proc println*(this: var HardwareSerial; s: cstring) {.importcpp: "println", header: "Arduino.h".}
 
@@ -68,6 +61,14 @@ proc myputchar*(c: char, f: FILE): cint {.exportc,cdecl.} =
 proc fdevopen*(put: proc (a1: char; a2: FILE): cint {.cdecl.};
                get: proc (a1: FILE): cint {.cdecl.} ): FILE {.importcpp: "fdevopen(@)", header: "stdio.h".}
 
-proc setupStdout*() =
-  stdout = fdevopen(myputchar, nil)
+# Convenience macros for the setup() and loop() functions
+
+template setup*(code: untyped) =
+  proc setup*() {.exportc.} =
+    stdout = fdevopen(myputchar, nil)
+    code 
+
+template loop*(code: untyped) =
+  proc loop*() {.exportc.} =
+    code 
 
