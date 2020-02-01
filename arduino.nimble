@@ -5,7 +5,7 @@ author        = "Ico Doornekamp"
 description   = "A new awesome nimble package"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["nim_arduino"]
+bin           = @["arduino/nim_arduino"]
 installExt    = @["nim"]
 
 
