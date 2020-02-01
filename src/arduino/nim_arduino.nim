@@ -2,7 +2,10 @@ import os, strutils, parseopt, osproc, npeg, tables, strformat, streams
 
 # Helper procs
 
-const nimInclude = "-I/home/ico/external/Nim/lib/"
+
+const (nimBindir, tmp1) = getCurrentCompilerExe().splitPath()
+const (nimDir, tmp2) = nimBindir.splitPath()
+const nimInclude = "-I" & nimdir & os.DirSep & "lib"
 
 proc err(s: string) =
   echo ">>> " & s
