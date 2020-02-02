@@ -35,7 +35,7 @@ file from the arduino tree to restore the original configuration.
 
 ## Example
 
-```
+```nim
 import arduino
 
 setup:
@@ -46,4 +46,15 @@ loop:
   delay 500
   digitalWrite LED_BUILTIN, LOW  
   delay 500
+```
+
+## Misc
+
+When using multiple source files, the Arduino IDE will concatenate all of those and feed them
+to the compiler, so this will not allow Nim to use the usual `import` mechanism. Instead, you
+can enable code reordering feature in Nim to make this work as expected: use the following
+pragma at the top of your sketch:
+
+```nim
+`{.experimental: "codeReordering".}`
 ```
