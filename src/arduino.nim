@@ -1,6 +1,7 @@
 
 # Mostly translated with c2nim from Arduino.h and friends
 
+import macros
 
 const LED_BUILTIN* = 13
 const HIGH* = 1
@@ -56,7 +57,6 @@ proc println*(this: var HardwareSerial; s: cstring) {.importcpp: "println", head
 
 proc pgmReadByte*(a: ptr uint8): uint8 {.importc:"pgm_read_byte", header:"avr/pgmspace.h" .}
 
-{.pragma: progmem, codegenDecl: "const $# PROGMEM $#" .}
 
 proc myputchar*(c: char, f: FILE): cint {.exportc,cdecl.} =
   discard Serial.write(c.uint8).cint
@@ -75,5 +75,21 @@ template setup*(code: untyped) =
 template loop*(code: untyped) =
   proc loop*() {.exportc.} =
     code 
+
+# Macro to move let sections in to PROGMEM
+
+macro progmem*(n: untyped): untyped =
+  n.expectKind(nnkStmtList)
+  var n2 = nnkLetSection.newTree()
+  for nl in n:
+    nl.expectKind(nnkLetSection)
+    n2.add nnkIdentDefs.newTree(
+      nnkPragmaExpr.newTree(
+        nl[0][0],
+        nnkPragma.newTree(nnkExprColonExpr.newTree( newIdentNode("codegenDecl"), newLit("const $# PROGMEM $#")))
+      ),
+      nl[0][1], nl[0][2]
+    )
+  n2
 
 
