@@ -54,6 +54,10 @@ proc write*(this: var HardwareSerial; n: uint8): csize_t {.importcpp: "write", h
 proc print*(this: var HardwareSerial; s: cstring) {.importcpp: "print", header: "Arduino.h".}
 proc println*(this: var HardwareSerial; s: cstring) {.importcpp: "println", header: "Arduino.h".}
 
+proc pgmReadByte*(a: ptr uint8): uint8 {.importc:"pgm_read_byte", header:"avr/pgmspace.h" .}
+
+{.pragma: progmem, codegenDecl: "const $# PROGMEM $#" .}
+
 proc myputchar*(c: char, f: FILE): cint {.exportc,cdecl.} =
   discard Serial.write(c.uint8).cint
   result = 0
@@ -71,4 +75,5 @@ template setup*(code: untyped) =
 template loop*(code: untyped) =
   proc loop*() {.exportc.} =
     code 
+
 
