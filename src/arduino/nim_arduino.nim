@@ -41,7 +41,9 @@ let p = peg line:
   line <- cmd * S * ?args * !1
   args <- arg * *(S * arg)
   cmd <- +Alnum: opt_cmd = $0
-  arg <- "--" * key * "=" * val: opt_args[$1] = $2
+  arg <- arg_long | arg_short
+  arg_short <- "-" * +(Alnum | '_')
+  arg_long <- "--" * key * "=" * val: opt_args[$1] = $2
   key <- >+Alnum
   val <- >+Alnum | '"' * >+(1-'"') * '"'
 
