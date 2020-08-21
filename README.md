@@ -1,8 +1,18 @@
 
 # Nim for Arduino
 
-This is an experimental project to allow integration of the Nim programming
-language into the Arduino IDE. There are two distinct parts to this:
+Let's start with a warning: this project is only an experimental hack. The
+Arduino development environment does not support other languages then C++, and
+the authors of the Arduino IDE have not shown any interest in allowing 3d
+party langauge integrations. To make this work, we create a fake compiler that
+looks like a C++ from the perspective of the Arduino IDE, but is actually a
+wrapper around the Nim compiler.
+
+The current status of this project is "Works For Me, but Don't Complain If It
+Doesn't For You". I *am* interested in any improvements, patches or other ideas
+to make this work better.
+
+There are two distinct parts to this project:
 
 - The host side: on the host the Arduino toolchain is reconfigured to use the
   Nim compiler by changing the normal recipes, this is done my overwriting some
